@@ -18,15 +18,15 @@ $currency_symbol = '₱';
                 <div class="checkout-meta">
                     <div>
                         <span>Payment</span>
-                        <strong>Secure</strong>
+                        <strong>Local Preview</strong>
                     </div>
                     <div>
                         <span>Status</span>
-                        <strong>Confirmed</strong>
+                        <strong>Preview Only</strong>
                     </div>
                 </div>
                 <div class="checkout-summary" id="mytheme-checkout-summary"></div>
-                <a class="checkout-order-btn" href="<?php echo esc_url( home_url( '/my-order/' ) ); ?>">Your Order</a>
+                <a class="checkout-order-btn" href="<?php echo esc_url( home_url( '/my-order/' ) ); ?>">View Orders</a>
             </div>
         </section>
     </main>

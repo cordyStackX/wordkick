@@ -42,7 +42,7 @@ $currency_symbol = '₱';
     (function() {
         var storageKey = 'mytheme_cart';
         var ajaxUrl = <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
-        var orderUrl = <?php echo wp_json_encode( home_url( '/my-order/' ) ); ?>;
+        var checkoutUrl = <?php echo wp_json_encode( home_url( '/checkout/' ) ); ?>;
         var itemsEl = document.getElementById('mytheme-cart-items');
         var subtotalEl = document.getElementById('mytheme-cart-subtotal');
         var totalEl = document.getElementById('mytheme-cart-total');
@@ -190,7 +190,7 @@ $currency_symbol = '₱';
 
                 var cart = getCart();
                 if (!cart.length) {
-                    window.location.href = orderUrl;
+                    window.location.href = checkoutUrl;
                     return;
                 }
 
@@ -214,7 +214,7 @@ $currency_symbol = '₱';
                     });
                 }).then(function(result) {
                     if (result && result.success && result.data && result.data.redirect) {
-                        window.location.href = result.data.redirect;
+                        window.location.href = checkoutUrl;
                         return;
                     }
                     alert('Checkout failed: ' + ((result && result.data && result.data.message) ? result.data.message : 'Unknown error'));
