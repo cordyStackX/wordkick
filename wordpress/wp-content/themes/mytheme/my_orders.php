@@ -5,6 +5,63 @@ Template Name: My Orders
 require_once get_theme_file_path( 'functions_my_order.php' );
 get_header();
 $currency_symbol = '₱';
+
+global $wpdb;
+$order_table    = $wpdb->prefix . 'wc_orders';
+$items_table    = $wpdb->prefix . 'woocommerce_order_items';
+$itemmeta_table = $wpdb->prefix . 'woocommerce_order_itemmeta';
+$order_id       = isset( $_GET['order_id'] ) ? absint( $_GET['order_id'] ) : 0;
+
+$orders = $order_id
+    ? $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT id, status, total_amount, currency, date_created_gmt FROM {$order_table} WHERE id = %d ORDER BY id DESC",
+            $order_id
+        )
+    )
+    : $wpdb->get_results(
+        "SELECT id, status, total_amount, currency, date_created_gmt FROM {$order_table} ORDER BY id DESC"
+    );
+
+$orders_with_items = array();
+
+foreach ( $orders as $order ) {
+    $db_items = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT order_item_id, order_item_name, order_item_type FROM {$items_table} WHERE order_id = %d ORDER BY order_item_id ASC",
+            $order->id
+        )
+    );
+
+    $items = array();
+    foreach ( $db_items as $db_item ) {
+        $meta = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT meta_key, meta_value FROM {$itemmeta_table} WHERE order_item_id = %d",
+                $db_item->order_item_id
+            )
+        );
+
+        $meta_map = array();
+        foreach ( $meta as $row ) {
+            $meta_map[ $row->meta_key ] = $row->meta_value;
+        }
+
+        $items[] = array(
+            'name'     => $db_item->order_item_name,
+            'type'     => $db_item->order_item_type,
+            'qty'      => isset( $meta_map['_qty'] ) ? (int) $meta_map['_qty'] : 1,
+            'total'    => isset( $meta_map['_line_total'] ) ? (float) $meta_map['_line_total'] : 0,
+            'subtotal' => isset( $meta_map['_line_subtotal'] ) ? (float) $meta_map['_line_subtotal'] : 0,
+            'raw'      => isset( $meta_map['_mytheme_raw_data'] ) ? json_decode( $meta_map['_mytheme_raw_data'], true ) : array(),
+        );
+    }
+
+    $orders_with_items[] = array(
+        'order' => $order,
+        'items' => $items,
+    );
+}
 ?>
 	<main>
         <?php get_template_part( 'nav' ); ?>
@@ -50,60 +107,49 @@ $currency_symbol = '₱';
             </aside>
             <div class="product_sale_cons">
                 <h2>Order History</h2>
-                <div id="mytheme-order-history"></div>
+                <div id="mytheme-order-history">
+                    <?php if ( ! empty( $orders_with_items ) ) : ?>
+                        <?php foreach ( $orders_with_items as $bundle ) : ?>
+                            <?php $order = $bundle['order']; ?>
+                            <div class="product_sale_cons_ordered">
+                                <span class="product_sale_cons_status">
+                                    <p style="opacity: 0.5;">Order #<?php echo esc_html( $order->id ); ?></p>
+                                    <p>Placed on <?php echo esc_html( mysql2date( 'F j, Y', $order->date_created_gmt ) ); ?></p>
+                                    <span class="product_sale_cons_status_icons">
+                                        <p style="font-size: 12px; color: #166534;"><?php echo esc_html( ucfirst( $order->status ) ); ?></p>
+                                    </span>
+                                    <h3><?php echo esc_html( $order->currency ); ?><?php echo esc_html( number_format( (float) $order->total_amount, 2 ) ); ?></h3>
+                                </span>
+                                <?php foreach ( $bundle['items'] as $item ) : ?>
+                                    <?php $raw = is_array( $item['raw'] ) ? $item['raw'] : array(); ?>
+                                    <div class="product_sale_cons_relative">
+                                        <figure class="product_sale_cons_figure">
+                                            <?php if ( ! empty( $raw['image'] ) ) : ?>
+                                                <img src="<?php echo esc_url( $raw['image'] ); ?>" alt="<?php echo esc_attr( $raw['title'] ?? $item['name'] ); ?>">
+                                            <?php endif; ?>
+                                            <figcaption>
+                                                <span>
+                                                    <h4><?php echo esc_html( $raw['title'] ?? $item['name'] ); ?></h4>
+                                                    <?php if ( ! empty( $raw['brand'] ) ) : ?>
+                                                        <p style="opacity: 0.5;"><?php echo esc_html( $raw['brand'] ); ?></p>
+                                                    <?php endif; ?>
+                                                    <?php if ( ! empty( $raw['size'] ) ) : ?>
+                                                        <p style="opacity: 0.5;">Size: <?php echo esc_html( $raw['size'] ); ?></p>
+                                                    <?php endif; ?>
+                                                    <p style="opacity: 0.5;">Qty: <?php echo esc_html( $item['qty'] ); ?></p>
+                                                </span>
+                                                <p style="opacity: 0.5;">Item total: <?php echo esc_html( $order->currency ); ?><?php echo esc_html( number_format( (float) $item['total'], 2 ) ); ?></p>
+                                            </figcaption>
+                                        </figure>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else : ?>
+                        <div class="empty-cart"><h2>No order found</h2><p>There are no stored orders in the database yet.</p></div>
+                    <?php endif; ?>
+                </div>
             </div>
         </section>
     </main>
-    <script>
-    (function() {
-        var holder = document.getElementById('mytheme-order-history');
-        var currencySymbol = <?php echo wp_json_encode( $currency_symbol ); ?>;
-        var cart = [];
-        try {
-            cart = JSON.parse(localStorage.getItem('mytheme_cart') || '[]');
-        } catch (e) {
-            cart = [];
-        }
-
-        if (!cart.length) {
-            holder.innerHTML = '<div class="empty-cart"><h2>No orders yet</h2><p>Checkout a product first.</p></div>';
-            return;
-        }
-
-        holder.innerHTML = cart.map(function(item) {
-            var price = parseFloat(item.price_amount);
-            if (isNaN(price) || price <= 0) {
-                price = parseFloat(String(item.price_text || '').replace(/[^0-9.,]/g, '').replace(/,/g, '')) || 0;
-            }
-
-            var quantity = parseInt(item.quantity, 10) || 1;
-            var lineTotal = price * quantity;
-
-            return (
-                '<div class="product_sale_cons_ordered">' +
-                    '<span class="product_sale_cons_status">' +
-                        '<p style="opacity: 0.5;">Order #' + item.product_id + '</p>' +
-                        '<p>Place on ' + new Date().toLocaleDateString() + '</p>' +
-                        '<span class="product_sale_cons_status_icons">' +
-                            '<p style="font-size: 12px; color: #166534;">Confirmed</p>' +
-                        '</span>' +
-                        '<h3>' + currencySymbol + lineTotal.toFixed(2) + '</h3>' +
-                    '</span>' +
-                    '<div class="product_sale_cons_relative">' +
-                        '<figure class="product_sale_cons_figure">' +
-                            '<img src="' + item.image + '" alt="' + item.title + '">' +
-                            '<figcaption>' +
-                                '<span>' +
-                                    '<h4>' + item.title + '</h4>' +
-                                    '<p style="opacity: 0.5;">Size: ' + (item.size || '10') + ' • Qty: ' + quantity + '</p>' +
-                                '</span>' +
-                                '<p style="cursor: pointer;">Track Package</p>' +
-                            '</figcaption>' +
-                        '</figure>' +
-                    '</div>' +
-                '</div>'
-            );
-        }).join('');
-    })();
-    </script>
 <?php get_footer(); ?>

@@ -1,4 +1,6 @@
 <?php
+require_once get_theme_file_path( 'functions4.php' );
+
   function mytheme_setup() {
       add_theme_support( 'title-tag' );
   }

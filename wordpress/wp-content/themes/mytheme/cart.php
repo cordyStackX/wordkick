@@ -25,7 +25,7 @@ $currency_symbol = '₱';
                         <div class="summary-row"><span>Tax</span><span>Calculated at checkout</span></div>
                         <div class="summary-row total"><span>Estimated Total</span><span id="mytheme-cart-total">$0.00</span></div>
                     </div>
-                    <a class="checkout-btn" href="<?php echo esc_url( home_url( '/checkout/' ) ); ?>">
+                    <a class="checkout-btn" href="<?php echo esc_url( home_url( '/checkout/' ) ); ?>" id="mytheme-checkout-btn">
                         Proceed to Checkout
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                             <path d="M3.333 8h9.334M8 3.333L12.667 8 8 12.667" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -41,9 +41,12 @@ $currency_symbol = '₱';
     <script>
     (function() {
         var storageKey = 'mytheme_cart';
+        var ajaxUrl = <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
+        var orderUrl = <?php echo wp_json_encode( home_url( '/my-order/' ) ); ?>;
         var itemsEl = document.getElementById('mytheme-cart-items');
         var subtotalEl = document.getElementById('mytheme-cart-subtotal');
         var totalEl = document.getElementById('mytheme-cart-total');
+        var checkoutBtn = document.getElementById('mytheme-checkout-btn');
 
         function getCart() {
             try {
@@ -55,6 +58,21 @@ $currency_symbol = '₱';
 
         function saveCart(cart) {
             localStorage.setItem(storageKey, JSON.stringify(cart));
+        }
+
+        function buildPayload(cart) {
+            return cart.map(function(item) {
+                return {
+                    title: item.title || '',
+                    brand: item.brand || '',
+                    size: item.size || '',
+                    quantity: parseInt(item.quantity, 10) || 1,
+                    price_amount: item.price_amount || 0,
+                    price_text: item.price_text || '',
+                    image: item.image || '',
+                    currency_symbol: item.currency_symbol || ''
+                };
+            });
         }
 
         function parsePrice(priceText) {
@@ -165,6 +183,46 @@ $currency_symbol = '₱';
             saveCart(cart);
             render();
         });
+
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                var cart = getCart();
+                if (!cart.length) {
+                    window.location.href = orderUrl;
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('action', 'mytheme_create_order_from_payload');
+                formData.append('payload', JSON.stringify(buildPayload(cart)));
+
+                fetch(ajaxUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: formData
+                }).then(function(response) {
+                    return response.text().then(function(text) {
+                        var parsed = null;
+                        try {
+                            parsed = JSON.parse(text);
+                        } catch (e) {
+                            throw new Error('Non-JSON response: ' + text.slice(0, 500));
+                        }
+                        return parsed;
+                    });
+                }).then(function(result) {
+                    if (result && result.success && result.data && result.data.redirect) {
+                        window.location.href = result.data.redirect;
+                        return;
+                    }
+                    alert('Checkout failed: ' + ((result && result.data && result.data.message) ? result.data.message : 'Unknown error'));
+                }).catch(function(error) {
+                    alert('Checkout failed: ' + (error && error.message ? error.message : 'request error'));
+                });
+            });
+        }
 
         render();
     })();
