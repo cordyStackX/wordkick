@@ -1,0 +1,121 @@
+.content {
+    width: 100%;
+    height: auto;
+    padding: 8rem;
+    display: flex;
+    justify-content: flex-start;
+}
+.content_aside {
+    width: 20%;
+    height: auto;
+}
+.content_aside span {
+    display: flex;
+}
+.content_aside div {
+    margin: 7rem 0;
+}
+.content_aside p {
+    margin: 5px 0;
+}
+.content_aside input {
+    margin: 0 10px;
+}
+.product_sale_cons {
+    width: 70%;
+    height: auto;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 32px;
+}
+.product_sale_cons_figure {
+    width: 100%;
+    height: auto;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+.product_sale_cons_figure img {
+    width: 100%;
+    display: block;
+    border-radius: 12px;
+}
+.product_sale_cons_figure span {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
+}
+.product_sale_cons figcaption {
+    padding-top: 1rem;
+}
+.product_sale_cons p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+    margin-top: 10px;
+
+}
+.product_sale_cons_relative {
+    position: relative;
+    width: 320px;
+}
+.product_sale_cons_relative > .product_sale_cons_figure {
+    display: block;
+    width: 100%;
+    color: #111827;
+    text-decoration: none;
+}
+.product_sale_cons_relative .product_sale_cons_figure:visited,
+.product_sale_cons_relative .product_sale_cons_figure:hover,
+.product_sale_cons_relative .product_sale_cons_figure:active {
+    color: #111827;
+    text-decoration: none;
+}
+.product_sale_cons_relative .product_sale_cons_figure * {
+    color: #111827;
+}
+.wishlist {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.wishlist img {
+    width: 100%;
+    height: 100%;
+}
+.product_sale_cons_status {
+    position: absolute;
+    top: 12px;
+    left: 10px;
+    width: 45px;
+    height: 25px;
+    padding: 5px;
+    background-color: #fff;
+    text-align: center;
+}
+.product_sale_cons_status p {
+    font-size: 0.8rem;
+    margin: 0;
+}
+.product_sale_cons_figure img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+.product_sale_cons_figure figcaption {
+    width: 100%;
+    display: block;
+}
+.product_sale_cons_figure figcaption span {
+    width: 100%;
+}

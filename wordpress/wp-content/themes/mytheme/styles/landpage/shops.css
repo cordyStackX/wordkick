@@ -1,0 +1,121 @@
+.shops {
+    width: 100%;
+    height: auto;
+}
+.shops_wrapper {
+    width: min(100dvw, var(--max-width));
+    height: auto;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+}
+.shops_content {
+    padding: 6rem 5rem;
+    width: 100%;
+    position: relative;
+}
+.shops_content_title {
+    line-height: 2;
+    width: 100%;
+    display: block;
+}
+.shops_content_title h2 {
+    font-size: 3rem;
+    font-weight: bold;
+}
+.shops_content_title p {
+    opacity: 0.8;
+}
+.shops_content_view_all {
+    position: absolute;
+    right: 100px;
+    top: 130px;
+    display: flex;
+    justify-content: space-between;
+    width: 90px;
+    cursor: pointer;
+}
+.shops_content_product {
+    width: 100%;
+    height: auto;
+    padding: 50px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+    margin: 0 auto;
+    align-items: start;
+    justify-items: flex-start;
+    cursor: pointer;
+}
+.fx_display {
+    position: absolute;
+    padding: 1px 16px;
+    left: 13px;
+    bottom: 125px;
+    color: #fff;
+    border-radius: 20px;
+}
+.fx_display_sales {
+    position: absolute;
+    padding: 1px 16px;
+    left: 13px;
+    bottom: 0;
+    color: #fff;
+    border-radius: 20px;
+}
+.shops_content_product p {
+    opacity: 0.5;
+    font-size: 0.8rem;
+}
+.shop_card {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    overflow: hidden;
+    line-height: 2;
+    position: relative;
+    text-align: left;
+    margin: 0;
+}
+.shop_card img {
+    width: 320px;
+    max-width: 100%;
+    border-radius: 15px;
+    display: block;
+}
+.shop_card h4 {
+    font-size: 1rem;
+    line-height: 1.3;
+}
+.shop_card h2 {
+    font-size: 1.2rem;
+}
+.shop_card h2,
+.shop_card h4,
+.shop_card p {
+    margin-left: auto;
+    margin-right: auto;
+}
+.shop_card p:not(.fx_display p) {
+    opacity: 0.7;
+}
+.shops_empty_state {
+    width: 100%;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    gap: 0.5rem;
+    grid-column: 1 / -1;
+}
+.shops_empty_state h3 {
+    font-size: 1.6rem;
+}
+.shops_empty_state p {
+    opacity: 0.7;
+}

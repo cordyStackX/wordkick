@@ -1,0 +1,118 @@
+.content {
+    width: 100%;
+    height: auto;
+    padding: 8rem;
+    display: flex;
+    justify-content: flex-start;
+}
+.content_aside {
+    width: 20%;
+    height: auto;
+}
+.content_aside div {
+    margin: 3rem 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-flow: column;
+}
+.content_aside button {
+    margin: 5px 0;
+    width: 200px;
+    height: 40px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    border: transparent;
+    background: transparent;
+    cursor: pointer;
+}
+.content_aside span {
+    width: 25px;
+    height: 25px;
+    margin: 0 10px;
+}
+.content_aside svg {
+    width: 100%;
+    height: 100%;
+}
+.content_aside p {
+    margin: 5px 0;
+}
+.content_aside input {
+    margin: 0 10px;
+}
+.product_sale_cons {
+    width: 180%;
+    height: auto;
+    display: flex;
+    flex-flow: column;
+    margin: 5.5rem 0 5.5rem 3rem;
+}
+.product_sale_cons_ordered {
+    display: flex;
+    justify-content: flex-start;
+    flex-flow: column;
+    margin: 2rem 0;
+    border: 1px solid #E5E7EB;
+}
+.product_sale_cons_figure {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 2rem;
+}
+.product_sale_cons_figure img {
+    width: 10%;
+    margin: 0;
+}
+.product_sale_cons_figure span {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-flow: column;
+    width: 290px;
+}
+.product_sale_cons figcaption {
+    margin: 0 2rem;
+}
+.product_sale_cons p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+    margin-top: 10px;
+
+}
+.product_sale_cons_relative {
+    position: relative;
+    width: 100%;
+}
+.product_sale_cons_status {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    background-color: #F9FAFB;
+    text-align: left;
+    position: relative;
+    border: 1px solid #E5E7EB;
+}
+.product_sale_cons_status h3 {
+    position: absolute;
+    right: 60px;
+    top: 36%;
+    font-size: 16px;
+}
+.product_sale_cons_status_icons {
+    position: absolute;
+    right: 150px;
+    top: 30%;
+    padding: 1px 3px;
+    border-radius: 20px;
+    background-color: #DCFCE7;
+}
+
+.product_sale_cons_status p {
+    font-size: 0.8rem;
+    margin: 0.5rem 1.5rem;
+}

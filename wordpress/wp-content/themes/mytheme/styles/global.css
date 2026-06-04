@@ -1,0 +1,34 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-weight: bold;
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+    scroll-behavior: smooth;
+}
+
+:root {
+    --primary: #3C3C3C;
+    --secondary: #E0DECF;
+    --primary-fx-color: 60,60,60,;
+    --secondary-fx-color: 224,222,207,;
+    --foreground-black: #000;
+    --foreground-white: #fff;
+    --blend: #E5E7EB;
+    --max-width: 1920px;
+}
+.container {
+    width: 100dvw;
+    height: auto;
+    display: flex;
+    flex-flow: column;
+    margin: 0 auto;
+    padding: 0;
+}
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+main {
+    padding-top: 120px; /* offset fixed header height so content isn't hidden behind it */
+}
