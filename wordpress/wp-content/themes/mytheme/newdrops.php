@@ -63,7 +63,7 @@ get_header();
                         $gender_terms = array_values( array_intersect( $term_slugs, array( 'men', 'women', 'unisex' ) ) );
                         $details_url = add_query_arg( 'product_id', get_the_ID(), home_url( '/product-details/' ) );
                         ?>
-                        <div class="product_sale_cons_relative" data-brand="<?php echo esc_attr( implode( ',', $brand_terms ) ); ?>" data-gender="<?php echo esc_attr( implode( ',', $gender_terms ) ); ?>" data-categories="<?php echo esc_attr( implode( ',', $term_slugs ) ); ?>">
+                        <div class="product_sale_cons_relative" data-tags="<?php echo esc_attr( implode( ',', array_unique( array_merge( $term_slugs, $brand_terms, $gender_terms ) ) ) ); ?>">
                             <?php if ( $is_sale ) : ?>
                                 <span class="product_sale_cons_status" style="background-color: #f00; color: #fff;">
                                     <p>Sales</p>
@@ -84,8 +84,10 @@ get_header();
                             ) ) ); ?>'>
                                 <img src="<?php echo esc_url( get_theme_file_uri( 'assets/heart_wishlist.png' ) ); ?>" alt="wishlist" title="wishlist">
                             </span>
-                            <a href="<?php echo esc_url( $details_url ); ?>" class="product_sale_cons_figure">
-                                <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>">
+                            <a href="<?php echo esc_url( $is_in_stock ? $details_url : '#' ); ?>" class="product_sale_cons_figure<?php echo $is_in_stock ? '' : ' is-out-of-stock'; ?>" <?php echo $is_in_stock ? '' : 'aria-disabled="true" tabindex="-1" onclick="return false;"'; ?>>
+                                <div class="product-image-frame">
+                                    <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>">
+                                </div>
                                 <figcaption>
                                     <span>
                                         <h4><?php the_title(); ?></h4>

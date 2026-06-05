@@ -103,3 +103,110 @@
     border: transparent;
     cursor: pointer;
 }
+
+.address-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 140px clamp(20px, 4vw, 64px) 60px;
+    background:
+        radial-gradient(circle at top left, rgba(17,24,39,0.06), transparent 28%),
+        linear-gradient(180deg, #f7f7f3 0%, #ffffff 100%);
+}
+.address-shell {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+}
+.address-card {
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(17,24,39,0.08);
+    box-shadow: 0 18px 50px rgba(17,24,39,0.08);
+    backdrop-filter: blur(18px);
+}
+.address-card {
+    border-radius: 28px;
+    padding: 28px;
+}
+.address-card-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.address-card-head h1 {
+    font-size: clamp(1.6rem, 2vw, 2.4rem);
+    margin-bottom: 8px;
+}
+.address-card-head p {
+    opacity: 0.7;
+    max-width: 56ch;
+    line-height: 1.6;
+}
+.address-back {
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: #111827;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.address-form {
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.address-field {
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+}
+.address-field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #111827;
+}
+.address-field input {
+    height: 52px;
+    padding: 0 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(17,24,39,0.12);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.address-field input:focus {
+    border-color: #111827;
+    box-shadow: 0 0 0 4px rgba(17,24,39,0.08);
+}
+.address-span-2 { grid-column: span 2; }
+.address-submit {
+    grid-column: span 2;
+    display:flex;
+    justify-content:flex-end;
+    padding-top: 6px;
+}
+.address-submit button {
+    height: 52px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #111827, #374151);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(17,24,39,0.18);
+}
+@media (max-width: 980px) {
+    .address-shell { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+    .address-form { grid-template-columns: 1fr; }
+    .address-span-2, .address-submit { grid-column: span 1; }
+    .address-card-head { flex-direction: column; }
+}

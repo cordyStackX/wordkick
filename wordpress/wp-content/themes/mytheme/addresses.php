@@ -119,42 +119,85 @@ get_header();
                 </div>
             </aside>
             <div class="product_sale_cons">
-                <h2>Saved Addressess</h2>
-                <div class="product_sale_cons_ordered">
-                    <span class="product_sale_cons_status">
-                        <p style="font-size: 18px;">JungCock</p>
-                        <p style="opacity: 0.5;">
-                            123 Sneaker Street
-                            <br>Apt 4B
-                            <br>New York, NY 10001
-                            <br>United States
-                        </p>
-                        <span class="edit_delete_css">
-                            <button>Edit</button>
-                            <button style="color: #f00;"> Delete</button>
-                        </span>
-                        <span class="product_sale_cons_status_icons">
-                            <p style="font-size: 12px; color: #000; margin: 0;">Default</p>
-                        </span>
-                    </span>
-                    <span class="product_sale_cons_status">
-                        <p style="font-size: 18px;">JungCock</p>
-                        <p style="opacity: 0.5;">
-                            123 Sneaker Street
-                            <br>Apt 4B
-                            <br>New York, NY 10001
-                            <br>United States
-                        </p>
-                        <span class="edit_delete_css">
-                            <button>Edit</button>
-                            <button style="color: #f00;"> Delete</button>
-                        </span>
-                        <span class="product_sale_cons_status_icons">
-                            <p style="font-size: 12px; color: #000; margin: 0;">Default</p>
-                        </span>
-                    </span>
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;">
+                    <h2>Saved Addresses</h2>
+                    <a href="<?php echo esc_url( home_url( '/new-address/' ) ); ?>" style="padding:10px 16px;border-radius:999px;background:#111;color:#fff;text-decoration:none;font-size:14px;">Add New Address</a>
                 </div>
+                <div class="product_sale_cons_ordered" id="mytheme-address-list"></div>
             </div>
         </section>
     </main>
+    <script>
+    (function() {
+        var storageKey = 'mytheme_addresses';
+        var listEl = document.getElementById('mytheme-address-list');
+        if (!listEl) return;
+
+        function readAddresses() {
+            try {
+                return JSON.parse(localStorage.getItem(storageKey) || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function writeAddresses(addresses) {
+            localStorage.setItem(storageKey, JSON.stringify(addresses));
+        }
+
+        function render() {
+            var addresses = readAddresses();
+            if (!addresses.length) {
+                listEl.innerHTML = '<div class="empty-cart"><h2>No saved addresses</h2><p>Add one to use it at checkout.</p></div>';
+                return;
+            }
+
+            listEl.innerHTML = addresses.map(function(addr, index) {
+                return (
+                    '<span class="product_sale_cons_status">' +
+                        '<p style="font-size: 18px;">' + (addr.name || 'Unnamed') + '</p>' +
+                        '<p style="opacity: 0.5;">' +
+                            (addr.line1 || '') + '<br>' +
+                            (addr.line2 || '') + '<br>' +
+                            (addr.city || '') + ', ' + (addr.state || '') + ' ' + (addr.postcode || '') + '<br>' +
+                            (addr.country || '') +
+                        '</p>' +
+                        '<span class="edit_delete_css">' +
+                            '<button type="button" data-set-default="' + index + '">Use</button>' +
+                            '<button type="button" style="color:#f00;" data-delete-address="' + index + '">Delete</button>' +
+                        '</span>' +
+                        '<span class="product_sale_cons_status_icons">' +
+                            '<p style="font-size: 12px; color: #000; margin: 0;">' + (addr.isDefault ? 'Default' : 'Saved') + '</p>' +
+                        '</span>' +
+                    '</span>'
+                );
+            }).join('');
+        }
+
+        listEl.addEventListener('click', function(event) {
+            var useButton = event.target.closest('[data-set-default]');
+            if (useButton) {
+                var addresses = readAddresses().map(function(addr, idx) {
+                    addr.isDefault = String(idx) === String(useButton.getAttribute('data-set-default'));
+                    return addr;
+                });
+                writeAddresses(addresses);
+                render();
+                return;
+            }
+
+            var deleteButton = event.target.closest('[data-delete-address]');
+            if (deleteButton) {
+                var idx = parseInt(deleteButton.getAttribute('data-delete-address'), 10);
+                var addresses = readAddresses().filter(function(_, currentIdx) {
+                    return currentIdx !== idx;
+                });
+                writeAddresses(addresses);
+                render();
+            }
+        });
+
+        render();
+    })();
+    </script>
 <?php get_footer(); ?>

@@ -19,6 +19,10 @@ $currency_symbol = '₱';
                 </div>
                 <aside class="cart-summary">
                     <h2 class="summary-title">Order Summary</h2>
+                    <div class="summary-row" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:16px;">
+                        <span>Shipping Address</span>
+                        <span id="mytheme-cart-address" style="font-size:0.92rem;line-height:1.5;opacity:0.9;">No address selected</span>
+                    </div>
                     <div class="summary-rows">
                         <div class="summary-row"><span>Subtotal</span><span id="mytheme-cart-subtotal">$0.00</span></div>
                         <div class="summary-row"><span>Shipping</span><span>Calculated at checkout</span></div>
@@ -47,6 +51,7 @@ $currency_symbol = '₱';
         var subtotalEl = document.getElementById('mytheme-cart-subtotal');
         var totalEl = document.getElementById('mytheme-cart-total');
         var checkoutBtn = document.getElementById('mytheme-checkout-btn');
+        var addressEl = document.getElementById('mytheme-cart-address');
 
         function getCart() {
             try {
@@ -61,6 +66,7 @@ $currency_symbol = '₱';
         }
 
         function buildPayload(cart) {
+            var address = readAddress();
             return cart.map(function(item) {
                 return {
                     title: item.title || '',
@@ -70,7 +76,8 @@ $currency_symbol = '₱';
                     price_amount: item.price_amount || 0,
                     price_text: item.price_text || '',
                     image: item.image || '',
-                    currency_symbol: item.currency_symbol || ''
+                    currency_symbol: item.currency_symbol || '',
+                    shipping_address: address || {}
                 };
             });
         }
@@ -89,6 +96,28 @@ $currency_symbol = '₱';
             return parsePrice(item.price_text);
         }
 
+        function readAddress() {
+            try {
+                var addresses = JSON.parse(localStorage.getItem('mytheme_addresses') || '[]');
+                return addresses.find(function(entry) {
+                    return entry && entry.isDefault;
+                }) || addresses[0] || null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function formatAddress(address) {
+            if (!address) return 'No address selected';
+            return [
+                address.name || '',
+                address.line1 || '',
+                address.line2 || '',
+                [address.city, address.state, address.postcode].filter(Boolean).join(', '),
+                address.country || ''
+            ].filter(Boolean).join('<br>');
+        }
+
         var currencySymbol = <?php echo wp_json_encode( $currency_symbol ); ?>;
 
         function formatMoney(value) {
@@ -98,6 +127,11 @@ $currency_symbol = '₱';
         function render() {
             var cart = getCart();
             var subtotal = 0;
+            var address = readAddress();
+
+            if (addressEl) {
+                addressEl.innerHTML = formatAddress(address);
+            }
 
             if (!cart.length) {
                 itemsEl.innerHTML = '<div class="empty-cart"><h2>Your cart is empty</h2><p>Go back and add a product.</p></div>';

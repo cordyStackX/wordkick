@@ -115,8 +115,39 @@ foreach ( $orders as $order ) {
                                 <span class="product_sale_cons_status">
                                     <p style="opacity: 0.5;">Order #<?php echo esc_html( $order->id ); ?></p>
                                     <p>Placed on <?php echo esc_html( mysql2date( 'F j, Y', $order->date_created_gmt ) ); ?></p>
-                                    <span class="product_sale_cons_status_icons">
-                                        <p style="font-size: 12px; color: #166534;"><?php echo esc_html( ucfirst( $order->status ) ); ?></p>
+                                    <?php
+                                    $raw_status = strtolower( (string) $order->status );
+                                    $normalized_status = preg_replace( '/^wc-/', '', $raw_status );
+
+                                    $status_colors = array(
+                                        'pending'    => '#b45309',
+                                        'processing' => '#2563eb',
+                                        'on-hold'    => '#7c3aed',
+                                        'completed'  => '#166534',
+                                        'failed'     => '#dc2626',
+                                        'cancelled'  => '#991b1b',
+                                        'refunded'   => '#0f766e',
+                                        'trash'      => '#6b7280',
+                                    );
+
+                                    $status_label = $raw_status ? str_replace( 'wc-', '', $raw_status ) : 'unknown';
+                                    $status_color = $status_colors[ $normalized_status ] ?? '#6b7280';
+                                    $status_backgrounds = array(
+                                        'pending'    => '#fef3c7',
+                                        'processing' => '#dbeafe',
+                                        'on-hold'    => '#ede9fe',
+                                        'completed'  => '#dcfce7',
+                                        'failed'     => '#fee2e2',
+                                        'cancelled'  => '#ffe4e6',
+                                        'refunded'   => '#ccfbf1',
+                                        'trash'      => '#f3f4f6',
+                                    );
+                                    $status_background = $status_backgrounds[ $normalized_status ] ?? '#f3f4f6';
+                                    ?>
+                                    <span class="product_sale_cons_status_icons" style="background: <?php echo esc_attr( $status_background ); ?>; border-radius: 999px; padding: 4px 10px; display: inline-flex; align-items: center;">
+                                        <p style="font-size: 12px; color: <?php echo esc_attr( $status_color ); ?>;">
+                                            <?php echo esc_html( ucfirst( $status_label ) ); ?>
+                                        </p>
                                     </span>
                                     <h3><?php echo esc_html( $order->currency ); ?><?php echo esc_html( number_format( (float) $order->total_amount, 2 ) ); ?></h3>
                                 </span>

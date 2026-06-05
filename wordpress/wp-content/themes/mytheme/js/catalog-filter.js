@@ -13,21 +13,23 @@
     }
 
     function cardMatches(card, brandFilters, genderFilters) {
-        var brand = normalize(card.getAttribute('data-brand'));
-        var gender = normalize(card.getAttribute('data-gender'));
-        var categories = (card.getAttribute('data-categories') || '')
+        var tags = (card.getAttribute('data-tags') || '')
             .split(',')
             .map(normalize)
             .filter(Boolean);
 
         if (brandFilters.length && !brandFilters.some(function (filter) {
-            return brand.indexOf(filter) !== -1 || categories.indexOf(filter) !== -1;
+            return tags.some(function (tag) {
+                return tag.indexOf(filter) !== -1;
+            });
         })) {
             return false;
         }
 
         if (genderFilters.length && !genderFilters.some(function (filter) {
-            return gender.indexOf(filter) !== -1 || categories.indexOf(filter) !== -1;
+            return tags.some(function (tag) {
+                return tag.indexOf(filter) !== -1;
+            });
         })) {
             return false;
         }

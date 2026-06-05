@@ -41,11 +41,13 @@ if ( ! function_exists( 'mytheme_render_home_products_section' ) ) {
             $image   = $image ? $image : wc_placeholder_img_src();
             $details_url = add_query_arg( 'product_id', get_the_ID(), home_url( '/product-details/' ) );
 
-            echo '<div class="shop_card" onclick="window.location.href=\'' . esc_url_raw( $details_url ) . '\'">';
+            echo '<div class="shop_card' . ( $is_in_stock ? '' : ' is-out-of-stock' ) . '"' . ( $is_in_stock ? ' onclick="window.location.href=\'' . esc_url_raw( $details_url ) . '\'"' : '' ) . '>';
             if ( $badge ) {
                 echo '<span class="fx_display" style="background-color: ' . esc_attr( $badge['color'] ) . ';"><p style="opacity: 1;">' . esc_html( $badge['label'] ) . '</p></span>';
             }
+            echo '<div class="product-image-frame">';
             echo '<img src="' . esc_url( $image ) . '" alt="pr_1">';
+            echo '</div>';
             echo '<p>' . esc_html( strtoupper( wp_strip_all_tags( $product->get_attribute( 'pa_brand' ) ? $product->get_attribute( 'pa_brand' ) : 'NIKE' ) ) ) . '</p>';
             echo '<h4>' . esc_html( $product->get_name() ) . '</h4>';
             echo '<p style="text-align: center;">(1,234)</p>';

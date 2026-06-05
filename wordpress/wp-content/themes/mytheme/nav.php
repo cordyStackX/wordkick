@@ -61,8 +61,9 @@
             </ul>
         </nav>
         <div class="search">
-            <input type="text">
+            <input type="text" id="mytheme-search-input" placeholder="Search products..." autocomplete="off">
             <span><img src="<?php echo esc_url( get_theme_file_uri( 'assets/search.png' ) ); ?>" alt="search" title="search"></span>
+            <div class="search-results" id="mytheme-search-results" hidden></div>
         </div>
         <div class="icons">
             <span><a href="<?php echo esc_url( home_url( '/index.php/my-order/' ) ); ?>"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/solar_user-broken.png' ) ); ?>" alt="user" title="user"></a></span>
@@ -100,5 +101,83 @@
     updateBadge();
     window.addEventListener('storage', updateBadge);
     window.addEventListener('mytheme-cart-updated', updateBadge);
+})();
+</script>
+<script>
+(function() {
+    var input = document.getElementById('mytheme-search-input');
+    var results = document.getElementById('mytheme-search-results');
+    var ajaxUrl = <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
+    var timer = null;
+
+    function hideResults() {
+        if (results) {
+            results.hidden = true;
+            results.innerHTML = '';
+        }
+    }
+
+    function renderResults(items) {
+        if (!results) return;
+
+        if (!items.length) {
+            results.innerHTML = '<div class="search-empty">No products found</div>';
+            results.hidden = false;
+            return;
+        }
+
+        results.innerHTML = items.map(function(item) {
+            return [
+                '<a class="search-item" href="' + item.url + '">',
+                '<img src="' + item.image + '" alt="' + item.name + '">',
+                '<span>',
+                '<strong>' + item.name + '</strong>',
+                '<small>' + item.price + '</small>',
+                '</span>',
+                '</a>'
+            ].join('');
+        }).join('');
+        results.hidden = false;
+    }
+
+    function fetchResults(term) {
+        var url = ajaxUrl + '?action=mytheme_search_products&term=' + encodeURIComponent(term);
+        fetch(url, { credentials: 'same-origin' })
+            .then(function(response) { return response.json(); })
+            .then(function(payload) {
+                renderResults((payload && payload.success && payload.data && payload.data.results) ? payload.data.results : []);
+            })
+            .catch(function() {
+                hideResults();
+            });
+    }
+
+    if (!input || !results) return;
+
+    input.addEventListener('input', function() {
+        var term = input.value.trim();
+        window.clearTimeout(timer);
+
+        if (term.length < 2) {
+            hideResults();
+            return;
+        }
+
+        timer = window.setTimeout(function() {
+            fetchResults(term);
+        }, 250);
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!results.contains(event.target) && event.target !== input) {
+            hideResults();
+        }
+    });
+
+    input.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            hideResults();
+        }
+    });
 })();
 </script>

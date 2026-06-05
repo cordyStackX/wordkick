@@ -93,7 +93,9 @@ if ( empty( $size_options ) ) {
                         <?php endforeach; ?>
                     </div>
                     <div class="main-image">
-                        <img src="<?php echo esc_url( $product_image ); ?>" alt="Product Image">
+                        <div class="product-image-frame">
+                            <img src="<?php echo esc_url( $product_image ); ?>" alt="Product Image">
+                        </div>
                     </div>
                 </div>
                 <form class="product-info" method="get" action="<?php echo esc_url( home_url( '/cart/' ) ); ?>" data-cart-form>
