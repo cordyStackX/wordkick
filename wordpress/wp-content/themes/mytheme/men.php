@@ -55,12 +55,16 @@ get_header();
 
                         $is_sale = $product->is_on_sale();
                         $is_new   = get_the_date( 'U' ) >= strtotime( '-30 days' );
+                        $is_in_stock = $product->is_in_stock();
                         $price    = $product->get_price_html();
                         $image    = get_the_post_thumbnail_url( get_the_ID(), 'woocommerce_thumbnail' );
                         $image    = $image ? $image : wc_placeholder_img_src();
+                        $term_slugs = wp_get_post_terms( get_the_ID(), 'product_cat', array( 'fields' => 'slugs' ) );
+                        $brand_terms = array_values( array_intersect( $term_slugs, array( 'nike', 'adidas', 'addidas', 'new-balance' ) ) );
+                        $gender_terms = array_values( array_intersect( $term_slugs, array( 'men', 'women', 'unisex' ) ) );
                         ?>
                         <?php $details_url = add_query_arg( 'product_id', get_the_ID(), home_url( '/product-details/' ) ); ?>
-                        <div class="product_sale_cons_relative">
+                        <div class="product_sale_cons_relative" data-brand="<?php echo esc_attr( implode( ',', $brand_terms ) ); ?>" data-gender="<?php echo esc_attr( implode( ',', $gender_terms ) ); ?>" data-categories="<?php echo esc_attr( implode( ',', $term_slugs ) ); ?>">
                             <?php if ( $is_sale ) : ?>
                                 <span class="product_sale_cons_status" style="background-color: #f00; color: #fff;">
                                     <p>Sales</p>
@@ -70,7 +74,15 @@ get_header();
                                     <p>New</p>
                                 </span>
                             <?php endif; ?>
-                            <span class="wishlist">
+                            <span class="wishlist" role="button" tabindex="0" aria-label="Add to wishlist" data-wishlist-item='<?php echo esc_attr( wp_json_encode( array(
+                                'id'       => get_the_ID(),
+                                'name'     => get_the_title(),
+                                'brand'    => 'Men',
+                                'price'    => wp_strip_all_tags( $price ),
+                                'image'    => $image,
+                                'url'      => $details_url,
+                                'category' => 'Men',
+                            ) ) ); ?>'>
                                 <img src="<?php echo esc_url( get_theme_file_uri( 'assets/heart_wishlist.png' ) ); ?>" alt="wishlist" title="wishlist">
                             </span>
                             <a href="<?php echo esc_url( $details_url ); ?>" class="product_sale_cons_figure">
@@ -84,6 +96,7 @@ get_header();
                                     <?php if ( $is_sale ) : ?>
                                         <p style="color: #f00; opacity: 0.9; font-size: 0.8rem;">Only a few left</p>
                                     <?php endif; ?>
+                                    <p style="margin-top: 6px; font-size: 0.8rem; color: <?php echo esc_attr( $is_in_stock ? '#16A34A' : '#DC2626' ); ?>;"><?php echo esc_html( $is_in_stock ? 'In Stock' : 'Out of Stock' ); ?></p>
                                 </figcaption>
                             </a>
                         </div>

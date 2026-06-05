@@ -86,10 +86,21 @@
     background-color: #fff;
     border-radius: 50%;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 .wishlist img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
+}
+.wishlist.is-active {
+    background-color: #000;
+}
+.wishlist.is-active img {
+    filter: brightness(0) invert(1);
 }
 .product_sale_cons_status {
     position: absolute;

@@ -2,6 +2,22 @@
 <?php
 if ( ! function_exists( 'mytheme_render_home_products_section' ) ) {
     function mytheme_render_home_products_section( $query, $section_class = '' ) {
+        $badge_map = array(
+            'best-sellers-grid' => array(
+                'label' => 'Best Seller',
+                'color' => '#DC143C',
+            ),
+            'trending-grid'     => array(
+                'label' => 'Trending Now',
+                'color' => '#2563EB',
+            ),
+            'sales-50-grid'     => array(
+                'label' => 'Sales 50%',
+                'color' => '#16A34A',
+            ),
+        );
+        $badge = isset( $badge_map[ $section_class ] ) ? $badge_map[ $section_class ] : null;
+
         if ( ! $query->have_posts() ) {
             echo '<div class="shops_empty_state"><h3>No products available</h3><p>There are no products in this category yet.</p></div>';
             return;
@@ -19,18 +35,22 @@ if ( ! function_exists( 'mytheme_render_home_products_section' ) ) {
 
             $is_sale = $product->is_on_sale();
             $is_new  = get_the_date( 'U' ) >= strtotime( '-30 days' );
+            $is_in_stock = $product->is_in_stock();
             $price   = $product->get_price_html();
             $image   = get_the_post_thumbnail_url( get_the_ID(), 'woocommerce_thumbnail' );
             $image   = $image ? $image : wc_placeholder_img_src();
             $details_url = add_query_arg( 'product_id', get_the_ID(), home_url( '/product-details/' ) );
 
             echo '<div class="shop_card" onclick="window.location.href=\'' . esc_url_raw( $details_url ) . '\'">';
-            echo '<span class="fx_display" style="background-color: #DC143C;"><p style="opacity: 1;">Best Seller</p></span>';
+            if ( $badge ) {
+                echo '<span class="fx_display" style="background-color: ' . esc_attr( $badge['color'] ) . ';"><p style="opacity: 1;">' . esc_html( $badge['label'] ) . '</p></span>';
+            }
             echo '<img src="' . esc_url( $image ) . '" alt="pr_1">';
             echo '<p>' . esc_html( strtoupper( wp_strip_all_tags( $product->get_attribute( 'pa_brand' ) ? $product->get_attribute( 'pa_brand' ) : 'NIKE' ) ) ) . '</p>';
             echo '<h4>' . esc_html( $product->get_name() ) . '</h4>';
             echo '<p style="text-align: center;">(1,234)</p>';
             echo '<h2>' . wp_kses_post( $price ) . '</h2>';
+            echo '<p style="margin-top: 8px; font-size: 12px; color: ' . esc_attr( $is_in_stock ? '#16A34A' : '#DC2626' ) . ';">' . esc_html( $is_in_stock ? 'In Stock' : 'Out of Stock' ) . '</p>';
             echo '</div>';
         }
 
@@ -194,7 +214,7 @@ if ( ! function_exists( 'mytheme_render_home_products_section' ) ) {
                 </div>
                 <div class="shops_content">
                     <span class="shops_content_title" style="color: #16A34A;">
-                        <h2>Sales 50%</h2>
+                        <h2>Sales 50% off</h2>
                         <p>Limited time deals on premium sneakers</p>
                     </span>
                     <span class="shops_content_view_all">
